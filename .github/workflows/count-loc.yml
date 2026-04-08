@@ -24,18 +24,19 @@ jobs:
           # Fetch all your public repos
           repos=$(curl -s "https://api.github.com/users/$GITHUB_USERNAME/repos?per_page=100" \
             -H "Authorization: token $GITHUB_TOKEN" \
-            | jq -r '.[].clone_url')
+            | jq -r '.[].name')
 
-          # Clone each repo
+          # Clone each repo using token in URL
           for repo in $repos; do
-            git clone --depth=1 $repo
+            git clone --depth=1 \
+              "https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$repo.git" \
+              || echo "Skipping $repo"
           done
 
           cd ..
 
           # Count LOC and save as JSON
           cloc all-repos --json --out=stats.json
-
       - name: Commit and push stats.json
         run: |
           git config user.name "github-actions"
