@@ -1,0 +1,104 @@
+{"header" : {
+  "cloc_url"           : "github.com/AlDanial/cloc",
+  "cloc_version"       : "1.98",
+  "elapsed_seconds"    : 0.153082847595215,
+  "n_files"            : 278,
+  "n_lines"            : 32264,
+  "files_per_second"   : 1816.01011718239,
+  "lines_per_second"   : 210761.692161053,
+  "report_file"        : "stats.json"},
+"JSON" :{
+  "nFiles": 15,
+  "blank": 0,
+  "comment": 0,
+  "code": 18237},
+"Markdown" :{
+  "nFiles": 22,
+  "blank": 1681,
+  "comment": 1,
+  "code": 3489},
+"Java" :{
+  "nFiles": 124,
+  "blank": 904,
+  "comment": 125,
+  "code": 3413},
+"CSS" :{
+  "nFiles": 16,
+  "blank": 115,
+  "comment": 13,
+  "code": 746},
+"JSX" :{
+  "nFiles": 18,
+  "blank": 52,
+  "comment": 0,
+  "code": 636},
+"Go" :{
+  "nFiles": 12,
+  "blank": 168,
+  "comment": 4,
+  "code": 518},
+"HTML" :{
+  "nFiles": 18,
+  "blank": 16,
+  "comment": 6,
+  "code": 508},
+"TypeScript" :{
+  "nFiles": 23,
+  "blank": 73,
+  "comment": 0,
+  "code": 359},
+"Maven" :{
+  "nFiles": 3,
+  "blank": 9,
+  "comment": 6,
+  "code": 302},
+"XML" :{
+  "nFiles": 12,
+  "blank": 0,
+  "comment": 0,
+  "code": 203},
+"Bourne Shell" :{
+  "nFiles": 1,
+  "blank": 26,
+  "comment": 48,
+  "code": 185},
+"DOS Batch" :{
+  "nFiles": 1,
+  "blank": 15,
+  "comment": 0,
+  "code": 134},
+"JavaScript" :{
+  "nFiles": 3,
+  "blank": 3,
+  "comment": 1,
+  "code": 70},
+"YAML" :{
+  "nFiles": 2,
+  "blank": 14,
+  "comment": 4,
+  "code": 66},
+"Properties" :{
+  "nFiles": 4,
+  "blank": 7,
+  "comment": 17,
+  "code": 32},
+"Python" :{
+  "nFiles": 1,
+  "blank": 7,
+  "comment": 6,
+  "code": 26},
+"INI" :{
+  "nFiles": 1,
+  "blank": 3,
+  "comment": 0,
+  "code": 14},
+"SVG" :{
+  "nFiles": 2,
+  "blank": 0,
+  "comment": 0,
+  "code": 2},
+"SUM": {
+  "blank": 3093,
+  "comment": 231,
+  "code": 28940,
+  "nFiles": 278} }
