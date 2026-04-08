@@ -1,0 +1,45 @@
+# count-loc.yml
+name: Count Lines of Code
+
+on:
+  schedule:
+    - cron: "0 0 * * 0" # runs every Sunday at midnight
+  workflow_dispatch: # allows manual trigger too
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install cloc
+        run: sudo apt-get install -y cloc
+
+      - name: Clone all repos and count LOC
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USERNAME: divakarvelagacherla
+        run: |
+          mkdir all-repos
+          cd all-repos
+
+          # Fetch all your public repos
+          repos=$(curl -s "https://api.github.com/users/$GITHUB_USERNAME/repos?per_page=100" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            | jq -r '.[].clone_url')
+
+          # Clone each repo
+          for repo in $repos; do
+            git clone --depth=1 $repo
+          done
+
+          cd ..
+
+          # Count LOC and save as JSON
+          cloc all-repos --json --out=stats.json
+
+      - name: Commit and push stats.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add stats.json
+          git commit -m "Update LOC stats" || echo "No changes"
+          git push
