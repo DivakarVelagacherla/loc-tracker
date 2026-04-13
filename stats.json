@@ -1,11 +1,11 @@
 {"header" : {
   "cloc_url"           : "github.com/AlDanial/cloc",
   "cloc_version"       : "1.98",
-  "elapsed_seconds"    : 0.156407117843628,
-  "n_files"            : 285,
-  "n_lines"            : 32462,
-  "files_per_second"   : 1822.16771160591,
-  "lines_per_second"   : 207548.099137373,
+  "elapsed_seconds"    : 0.151990175247192,
+  "n_files"            : 319,
+  "n_lines"            : 33491,
+  "files_per_second"   : 2098.81987096329,
+  "lines_per_second"   : 220349.7689606,
   "report_file"        : "stats.json"},
 "JSON" :{
   "nFiles": 16,
@@ -23,30 +23,30 @@
   "comment": 125,
   "code": 3413},
 "CSS" :{
-  "nFiles": 18,
-  "blank": 114,
-  "comment": 13,
-  "code": 753},
+  "nFiles": 24,
+  "blank": 156,
+  "comment": 16,
+  "code": 1031},
+"TypeScript" :{
+  "nFiles": 49,
+  "blank": 153,
+  "comment": 1,
+  "code": 955},
 "JSX" :{
   "nFiles": 18,
   "blank": 52,
   "comment": 0,
   "code": 636},
+"HTML" :{
+  "nFiles": 24,
+  "blank": 16,
+  "comment": 6,
+  "code": 602},
 "Go" :{
   "nFiles": 12,
   "blank": 168,
   "comment": 4,
   "code": 518},
-"HTML" :{
-  "nFiles": 19,
-  "blank": 16,
-  "comment": 7,
-  "code": 514},
-"TypeScript" :{
-  "nFiles": 26,
-  "blank": 82,
-  "comment": 0,
-  "code": 408},
 "Maven" :{
   "nFiles": 3,
   "blank": 9,
@@ -98,7 +98,7 @@
   "comment": 0,
   "code": 2},
 "SUM": {
-  "blank": 3112,
-  "comment": 228,
-  "code": 29122,
-  "nFiles": 285} }
+  "blank": 3225,
+  "comment": 231,
+  "code": 30035,
+  "nFiles": 319} }
