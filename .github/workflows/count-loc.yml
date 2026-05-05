@@ -16,45 +16,63 @@ jobs:
       - name: Install cloc and jq
         run: sudo apt-get install -y cloc jq
 
-      - name: Clone all repos and count stats
+      - name: Fetch all repos
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USERNAME: divakarvelagacherla
+        run: |
+          repos=$(curl -s "https://api.github.com/users/$GITHUB_USERNAME/repos?per_page=100" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            | jq -r '.[].name')
+          echo "$repos" > repos.txt
+          echo "total_repos=$(echo "$repos" | wc -w)" >> $GITHUB_ENV
+
+      - name: Clone all repos
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_USERNAME: divakarvelagacherla
         run: |
           mkdir all-repos
           cd all-repos
-
-          repos=$(curl -s "https://api.github.com/users/$GITHUB_USERNAME/repos?per_page=100" \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            | jq -r '.[].name')
-
-          for repo in $repos; do
+          while IFS= read -r repo; do
             git clone --depth=1 \
               "https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$repo.git" \
               || echo "Skipping $repo"
-          done
+          done < ../repos.txt
 
-          cd ..
+      - name: Count lines of code
+        run: |
           cloc all-repos --json --out=cloc_raw.json
+          echo "total_loc=$(jq '.SUM.code' cloc_raw.json)" >> $GITHUB_ENV
 
-          total_loc=$(jq '.SUM.code' cloc_raw.json)
-
-          total_repos=$(echo "$repos" | wc -w)
-
+      - name: Count total PRs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USERNAME: divakarvelagacherla
+        run: |
           total_prs=$(curl -s "https://api.github.com/search/issues?q=type:pr+author:$GITHUB_USERNAME" \
             -H "Authorization: token $GITHUB_TOKEN" \
             | jq '.total_count')
+          echo "total_prs=$total_prs" >> $GITHUB_ENV
 
+      - name: Count total commits
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USERNAME: divakarvelagacherla
+        run: |
           total_commits=0
-          for repo in $repos; do
+          while IFS= read -r repo; do
             count=$(curl -s \
               "https://api.github.com/repos/$GITHUB_USERNAME/$repo/contributors" \
               -H "Authorization: token $GITHUB_TOKEN" \
               | jq --arg user "$GITHUB_USERNAME" \
               'if type == "array" then [.[] | select(.login | ascii_downcase == ($user | ascii_downcase)) | .contributions] | add // 0 else 0 end')
             total_commits=$((total_commits + ${count:-0}))
-          done
+          done < repos.txt
+          echo "total_commits=$total_commits" >> $GITHUB_ENV
 
+      - name: Generate stats.json
+        run: |
           jq -n \
             --argjson loc "$total_loc" \
             --argjson repos "$total_repos" \
