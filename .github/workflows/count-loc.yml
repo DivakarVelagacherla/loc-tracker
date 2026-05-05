@@ -16,6 +16,9 @@ jobs:
       - name: Install cloc and jq
         run: sudo apt-get install -y cloc jq
 
+      - name: Install Python dependencies
+        run: pip install requests
+
       - name: Fetch all repos
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -71,14 +74,54 @@ jobs:
           done < repos.txt
           echo "total_commits=$total_commits" >> $GITHUB_ENV
 
+      - name: Fetch LeetCode stats
+        env:
+          LEETCODE_USERNAME: divakarvelagacherla
+        run: |
+          python3 - <<'EOF'
+          import requests
+          import json
+          import os
+
+          username = os.environ['LEETCODE_USERNAME']
+          url = f'https://leetcode-stats-api.herokuapp.com/{username}'
+
+          try:
+            stats = requests.get(url).json()
+            solved = stats.get('totalSolved', 0)
+            rank = stats.get('ranking', 0)
+            easy = stats.get('easySolved', 0)
+            medium = stats.get('mediumSolved', 0)
+            hard = stats.get('hardSolved', 0)
+          except Exception:
+            solved = rank = easy = medium = hard = 0
+
+          with open('leetcode_stats.json', 'w') as f:
+            json.dump({
+              'total_solved': solved,
+              'ranking': rank,
+              'easy_solved': easy,
+              'medium_solved': medium,
+              'hard_solved': hard
+            }, f)
+          EOF
+
       - name: Generate stats.json
         run: |
+          leetcode=$(cat leetcode_stats.json)
           jq -n \
             --argjson loc "$total_loc" \
             --argjson repos "$total_repos" \
             --argjson prs "$total_prs" \
             --argjson commits "$total_commits" \
-            '{total_lines_code: $loc, total_repos: $repos, total_prs: $prs, total_commits: $commits}' \
+            --argjson leetcode "$leetcode" \
+            '{
+              total_lines_code: $loc,
+              total_repos: $repos,
+              total_prs: $prs,
+              total_commits: $commits,
+              leetcode: $leetcode
+            }' \
             > stats.json
 
       - name: Commit and push stats.json
@@ -87,4 +130,5 @@ jobs:
           git config user.email "actions@github.com"
           git add stats.json
           git commit -m "Update LOC stats" || echo "No changes"
+          git pull --rebase origin main
           git push
