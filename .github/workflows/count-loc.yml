@@ -51,8 +51,8 @@ jobs:
               "https://api.github.com/repos/$GITHUB_USERNAME/$repo/contributors" \
               -H "Authorization: token $GITHUB_TOKEN" \
               | jq --arg user "$GITHUB_USERNAME" \
-              '[.[] | select(.login | ascii_downcase == ($user | ascii_downcase)) | .contributions] | add // 0')
-            total_commits=$((total_commits + count))
+              'if type == "array" then [.[] | select(.login | ascii_downcase == ($user | ascii_downcase)) | .contributions] | add // 0 else 0 end')
+            total_commits=$((total_commits + ${count:-0}))
           done
 
           jq -n \
