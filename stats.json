@@ -2,5 +2,12 @@
   "total_lines_code": 31314,
   "total_repos": 18,
   "total_prs": 67,
-  "total_commits": 268
+  "total_commits": 268,
+  "leetcode": {
+    "total_solved": 0,
+    "ranking": 0,
+    "easy_solved": 0,
+    "medium_solved": 0,
+    "hard_solved": 0
+  }
 }
