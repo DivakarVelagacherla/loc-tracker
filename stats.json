@@ -1,104 +1,13 @@
-{"header" : {
-  "cloc_url"           : "github.com/AlDanial/cloc",
-  "cloc_version"       : "1.98",
-  "elapsed_seconds"    : 0.174621105194092,
-  "n_files"            : 354,
-  "n_lines"            : 34976,
-  "files_per_second"   : 2027.24636066487,
-  "lines_per_second"   : 200296.521781397,
-  "report_file"        : "stats.json"},
-"JSON" :{
-  "nFiles": 16,
-  "blank": 0,
-  "comment": 0,
-  "code": 18382},
-"Markdown" :{
-  "nFiles": 22,
-  "blank": 1690,
-  "comment": 1,
-  "code": 3502},
-"Java" :{
-  "nFiles": 124,
-  "blank": 904,
-  "comment": 125,
-  "code": 3413},
-"TypeScript" :{
-  "nFiles": 70,
-  "blank": 232,
-  "comment": 1,
-  "code": 1583},
-"CSS" :{
-  "nFiles": 30,
-  "blank": 233,
-  "comment": 60,
-  "code": 1495},
-"HTML" :{
-  "nFiles": 31,
-  "blank": 19,
-  "comment": 1,
-  "code": 712},
-"JSX" :{
-  "nFiles": 18,
-  "blank": 52,
-  "comment": 0,
-  "code": 636},
-"Go" :{
-  "nFiles": 12,
-  "blank": 168,
-  "comment": 4,
-  "code": 518},
-"Maven" :{
-  "nFiles": 3,
-  "blank": 9,
-  "comment": 6,
-  "code": 302},
-"XML" :{
-  "nFiles": 12,
-  "blank": 0,
-  "comment": 0,
-  "code": 203},
-"Bourne Shell" :{
-  "nFiles": 1,
-  "blank": 26,
-  "comment": 48,
-  "code": 185},
-"DOS Batch" :{
-  "nFiles": 1,
-  "blank": 15,
-  "comment": 0,
-  "code": 134},
-"YAML" :{
-  "nFiles": 3,
-  "blank": 24,
-  "comment": 0,
-  "code": 105},
-"JavaScript" :{
-  "nFiles": 3,
-  "blank": 3,
-  "comment": 1,
-  "code": 70},
-"Properties" :{
-  "nFiles": 4,
-  "blank": 7,
-  "comment": 17,
-  "code": 32},
-"Python" :{
-  "nFiles": 1,
-  "blank": 7,
-  "comment": 6,
-  "code": 26},
-"INI" :{
-  "nFiles": 1,
-  "blank": 3,
-  "comment": 0,
-  "code": 14},
-"SVG" :{
-  "nFiles": 2,
-  "blank": 0,
-  "comment": 0,
-  "code": 2},
-"SUM": {
-  "blank": 3392,
-  "comment": 270,
-  "code": 31314,
-  "nFiles": 354} }
+{
+  "total_lines_code": 31314,
+  "total_repos": 18,
+  "total_prs": 67,
+  "total_commits": 268,
+  "leetcode": {
+    "total_solved": 65,
+    "ranking": 2078276,
+    "easy_solved": 29,
+    "medium_solved": 32,
+    "hard_solved": 4
+  }
+}

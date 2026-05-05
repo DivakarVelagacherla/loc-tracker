@@ -1,5 +1,4 @@
 name: Count Lines of Code
-
 on:
   schedule:
     - cron: "0 0 * * *"
@@ -8,10 +7,8 @@ on:
 jobs:
   count:
     runs-on: ubuntu-latest
-
     permissions:
-      contents: write # ← THIS is what was missing
-
+      contents: write
     steps:
       - name: Checkout this repo
         uses: actions/checkout@v3
@@ -19,26 +16,141 @@ jobs:
       - name: Install cloc and jq
         run: sudo apt-get install -y cloc jq
 
-      - name: Clone all repos and count LOC
+      - name: Install Python dependencies
+        run: pip install requests
+
+      - name: Fetch all repos
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USERNAME: divakarvelagacherla
+        run: |
+          repos=$(curl -s "https://api.github.com/users/$GITHUB_USERNAME/repos?per_page=100" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            | jq -r '.[].name')
+          echo "$repos" > repos.txt
+          echo "total_repos=$(echo "$repos" | wc -w)" >> $GITHUB_ENV
+
+      - name: Clone all repos
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_USERNAME: divakarvelagacherla
         run: |
           mkdir all-repos
           cd all-repos
-
-          repos=$(curl -s "https://api.github.com/users/$GITHUB_USERNAME/repos?per_page=100" \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            | jq -r '.[].name')
-
-          for repo in $repos; do
+          while IFS= read -r repo; do
             git clone --depth=1 \
               "https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$repo.git" \
               || echo "Skipping $repo"
-          done
+          done < ../repos.txt
 
-          cd ..
-          cloc all-repos --json --out=stats.json
+      - name: Count lines of code
+        run: |
+          cloc all-repos --json --out=cloc_raw.json
+          echo "total_loc=$(jq '.SUM.code' cloc_raw.json)" >> $GITHUB_ENV
+
+      - name: Count total PRs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USERNAME: divakarvelagacherla
+        run: |
+          total_prs=$(curl -s "https://api.github.com/search/issues?q=type:pr+author:$GITHUB_USERNAME" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            | jq '.total_count')
+          echo "total_prs=$total_prs" >> $GITHUB_ENV
+
+      - name: Count total commits
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USERNAME: divakarvelagacherla
+        run: |
+          total_commits=0
+          while IFS= read -r repo; do
+            count=$(curl -s \
+              "https://api.github.com/repos/$GITHUB_USERNAME/$repo/contributors" \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              | jq --arg user "$GITHUB_USERNAME" \
+              'if type == "array" then [.[] | select(.login | ascii_downcase == ($user | ascii_downcase)) | .contributions] | add // 0 else 0 end')
+            total_commits=$((total_commits + ${count:-0}))
+          done < repos.txt
+          echo "total_commits=$total_commits" >> $GITHUB_ENV
+
+      - name: Fetch LeetCode stats
+        env:
+          LEETCODE_USERNAME: divakarvelagacherla
+        run: |
+          python3 - <<'EOF'
+          import requests
+          import json
+          import os
+
+          username = os.environ['LEETCODE_USERNAME']
+
+          url = 'https://leetcode.com/graphql'
+
+          query = """
+          {
+            matchedUser(username: "%s") {
+              submitStats {
+                acSubmissionNum {
+                  difficulty
+                  count
+                }
+              }
+              profile {
+                ranking
+              }
+            }
+          }
+          """ % username
+
+          headers = {
+            'Content-Type': 'application/json',
+            'Referer': 'https://leetcode.com'
+          }
+
+          try:
+            response = requests.post(url, json={'query': query}, headers=headers)
+            data = response.json()
+            
+            stats = data['data']['matchedUser']['submitStats']['acSubmissionNum']
+            ranking = data['data']['matchedUser']['profile']['ranking']
+            
+            solved = next((s['count'] for s in stats if s['difficulty'] == 'All'), 0)
+            easy = next((s['count'] for s in stats if s['difficulty'] == 'Easy'), 0)
+            medium = next((s['count'] for s in stats if s['difficulty'] == 'Medium'), 0)
+            hard = next((s['count'] for s in stats if s['difficulty'] == 'Hard'), 0)
+
+          except Exception as e:
+            print(f"Error: {e}")
+            solved = ranking = easy = medium = hard = 0
+
+          with open('leetcode_stats.json', 'w') as f:
+            json.dump({
+              'total_solved': solved,
+              'ranking': ranking,
+              'easy_solved': easy,
+              'medium_solved': medium,
+              'hard_solved': hard
+            }, f)
+          EOF
+
+      - name: Generate stats.json
+        run: |
+          leetcode=$(cat leetcode_stats.json)
+          jq -n \
+            --argjson loc "$total_loc" \
+            --argjson repos "$total_repos" \
+            --argjson prs "$total_prs" \
+            --argjson commits "$total_commits" \
+            --argjson leetcode "$leetcode" \
+            '{
+              total_lines_code: $loc,
+              total_repos: $repos,
+              total_prs: $prs,
+              total_commits: $commits,
+              leetcode: $leetcode
+            }' \
+            > stats.json
 
       - name: Commit and push stats.json
         run: |
